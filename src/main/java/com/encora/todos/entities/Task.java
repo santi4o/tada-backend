@@ -3,7 +3,7 @@ package com.encora.todos.entities;
 import java.util.Date;
 
 public class Task {
-    private static int count = 0;
+    // private static int count = 0;
     private Integer id;
     private String text;
     private Integer priority;
@@ -20,7 +20,7 @@ public class Task {
         this.creationDate = creationDate;
         this.dueDate = dueDate;
         this.done = done;
-        setId(++count);
+        // setId(++count);
     }
 
     public Integer getId() {
@@ -82,10 +82,5 @@ public class Task {
     public void setDoneDate(Date doneDate) {
         this.doneDate = doneDate;
     }
-
-    
-
-    
-
 
 }
