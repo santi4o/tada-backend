@@ -78,8 +78,7 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
 
     @Override
     public void delete(Task task) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        tasks.remove(task);
     }
     
 }
