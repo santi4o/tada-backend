@@ -63,4 +63,30 @@ public class TaskRepositoryTest {
         tasks = dao.findAll();
         assertTrue(tasks.size() >= 2); // because the order of execution of tests is "deterministic but intentionally non obvious"
     }
+
+    @Test
+    public void update() {
+        Date now = new Date();
+        Task task = new Task("keep practicing Angular", 1, now, null, false);
+        dao.save(task);
+        Task retrieved = dao.findById(1).get();
+        retrieved.setText("feed my cat");
+        assertNull(retrieved.getDoneDate());
+        retrieved.setDone(true);
+        dao.save(retrieved);
+        assertNotNull(retrieved.getDoneDate());
+        Task retrieved2 = dao.findById(1).get();
+        assertEquals("feed my cat", retrieved2.getText());
+    }
+
+    @Test
+    public void count() {
+        Date now = new Date();
+        Task task = new Task("keep practicing Angular", 1, now, null, false);
+        dao.save(task);
+        System.out.println("collection size: " + dao.count());
+        assertTrue(dao.count() >= 1); // because the order of execution of tests is "deterministic but intentionally non obvious"
+    }
+
+    
 }

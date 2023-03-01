@@ -73,8 +73,7 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
 
     @Override
     public long count() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'count'");
+        return tasks.size();
     }
 
     @Override
