@@ -1,12 +1,14 @@
 package com.encora.todos.entities;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 import java.util.Date;
 
 public class Task {
-    // private static int count = 0;
     private Integer id;
     private String text;
     private Integer priority;
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date creationDate;
     private Date dueDate;
     private Boolean done;
@@ -20,7 +22,6 @@ public class Task {
         this.creationDate = creationDate;
         this.dueDate = dueDate;
         this.done = done;
-        // setId(++count);
     }
 
     public Integer getId() {
@@ -149,7 +150,4 @@ public class Task {
         return "Task [id=" + id + ", text=" + text + ", priority=" + priority + ", creationDate=" + creationDate
                 + ", dueDate=" + dueDate + ", done=" + done + ", doneDate=" + doneDate + "]";
     }
-
-    
-
 }
