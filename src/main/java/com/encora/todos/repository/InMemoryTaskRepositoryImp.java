@@ -82,13 +82,13 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
 
     @Override
     public Page<Task> findAll(Pageable pageable) {
-        System.out.println("elements per page: " + pageable.getPageSize());
-        System.out.println(Comparator.naturalOrder().getClass());
+        // System.out.println("elements per page: " + pageable.getPageSize());
+        // System.out.println(Comparator.naturalOrder().getClass());
         List<Order> sortOrders = new ArrayList<Order>(pageable.getSort().toList());
-        System.out.println("sort types:");
-        sortOrders.forEach(order -> {
-            System.out.println(order.getProperty() + " " + order.getDirection() + " " + order.getDirection().toString().getClass());
-        });
+        // System.out.println("sort types:");
+        // sortOrders.forEach(order -> {
+        //     System.out.println(order.getProperty() + " " + order.getDirection() + " " + order.getDirection().toString().getClass());
+        // });
 
         Comparator<Task> comparator;
         if (sortOrders.size() > 0) {
@@ -121,7 +121,7 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
                 return null;
             }
 
-            System.out.println("pageable: " + pageable);
+            // System.out.println("pageable: " + pageable);
             
             return page;
         } else {
