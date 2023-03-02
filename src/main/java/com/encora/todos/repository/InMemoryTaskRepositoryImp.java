@@ -92,6 +92,9 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
 
         Comparator<Task> comparator;
         if (sortOrders.size() > 0) {
+            
+            // I tried to use a hashmap (and avoid if else) for inserting Comparator.naturalOrder() or Comparator.reverseOrder() depending on the
+            // value of sortOrders.get(index).getDirection, but I had issues with the types for the hashmap, tried without success
             if (sortOrders.get(0).getDirection() == Sort.Direction.ASC) {
                 comparator = Comparator.comparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.naturalOrder());
             } else {
@@ -118,7 +121,7 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
             try {
                 page = new PageImpl<>(pages.get(pageable.getPageNumber()), pageable, tasks.size());
             } catch (IndexOutOfBoundsException e) {
-                return null;
+                page = new PageImpl<>(new ArrayList<>(), pageable, tasks.size());
             }
 
             // System.out.println("pageable: " + pageable);
