@@ -10,8 +10,10 @@ public class Task {
     private Integer priority;
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date creationDate;
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date dueDate;
     private Boolean done;
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date doneDate;
 
     public Task() {}

@@ -32,7 +32,7 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
         keyExtractors.put("text", task -> task.getText() );
         keyExtractors.put("priority", task -> task.getPriority().toString());
         keyExtractors.put("creationDate", task -> dateFormat.format(task.getCreationDate()));
-        keyExtractors.put("dueDate", task -> task.getDueDate().toString());
+        keyExtractors.put("dueDate", task -> task.getDueDate() != null ? dateFormat.format(task.getDueDate()) : "");
         keyExtractors.put("done", task -> task.getDone().toString());
     }
 
