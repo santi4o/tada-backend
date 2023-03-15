@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -21,8 +20,6 @@ public class TaskService {
     private final InMemoryTaskRepositoryImp repository;
     Map<String, Sort.Direction> directions = new HashMap<String, Sort.Direction>();
 
-
-    @Autowired
     public TaskService(InMemoryTaskRepositoryImp repository) {
         this.repository = repository;
         directions.put("ASC", Sort.Direction.ASC);
@@ -37,7 +34,7 @@ public class TaskService {
         return repository.findAll();
     }
 
-    public Page<Task> getAllTasks(TaskPageRequest taskPageRequest) {
+    public Page<Task> getTasks(TaskPageRequest taskPageRequest) {
         List<Sort.Order> orders = new ArrayList<Sort.Order>();
 
         taskPageRequest.sort().forEach((order) -> {
@@ -46,6 +43,25 @@ public class TaskService {
 
         PageRequest pr = PageRequest.of(taskPageRequest.number(), taskPageRequest.size(), Sort.by(orders));
         // System.out.println("page request: " + pr);
+        return repository.findAll(pr);
+    }
+
+    public Page<Task> getTasks(String pageNumber, String pageSize, ArrayList<String> sorting) {
+        List<Sort.Order> orders = new ArrayList<Sort.Order>();
+
+        if (sorting != null) {
+            sorting.forEach((order) -> {
+                try {
+                    String[] sortingBy = order.split("-");
+                    orders.add(new Sort.Order(directions.get(sortingBy[1]), sortingBy[0]));
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            });
+        }
+
+        PageRequest pr = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), Sort.by(orders));
+       
         return repository.findAll(pr);
     }
 
