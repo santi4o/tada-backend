@@ -39,8 +39,10 @@ public class TaskController {
 
     @CrossOrigin
     @GetMapping()
-    public Page<Task> findPage(@RequestParam String pageNumber, @RequestParam String pageSize, @RequestParam(required = false) ArrayList<String> sorting) {
-        return service.getTasks(pageNumber, pageSize, sorting);
+    public Page<Task> findPage(@RequestParam String pageNumber, @RequestParam String pageSize,
+            @RequestParam(required = false) ArrayList<String> sorting, @RequestParam(required = false) String name,
+            @RequestParam(required = false) String priority, @RequestParam(required = false) String done) {
+        return service.getTasks(pageNumber, pageSize, sorting, name, priority, done);
     }
 
     @GetMapping("{id}")

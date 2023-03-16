@@ -16,4 +16,9 @@ public interface TaskRepository {
     Optional<Task> findById(Integer id); // Delete when extending JpaRepository
     long count(); // Delete when extending JpaRepository
     void delete(Task task); // Delete when extending JpaRepository
+
+    // I think this one would anyway need a custom implementation (even when extending JpaRepository)
+    // because it seems there is no findBy... method that returns a Page<T>, and takes a list of
+    // the mentioned parammeters in addition to the Pageable
+    Page<Task> findByNameAndPriorityAndStatus(String name, String priority, String status, Pageable pageable);
 }

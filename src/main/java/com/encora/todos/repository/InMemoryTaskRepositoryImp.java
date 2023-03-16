@@ -80,57 +80,95 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
         return tasks;
     }
 
-    @Override
-    public Page<Task> findAll(Pageable pageable) {
-        // System.out.println("elements per page: " + pageable.getPageSize());
-        // System.out.println(Comparator.naturalOrder().getClass());
-        List<Order> sortOrders = new ArrayList<Order>(pageable.getSort().toList());
-        // System.out.println("sort types:");
-        // sortOrders.forEach(order -> {
-        //     System.out.println(order.getProperty() + " " + order.getDirection() + " " + order.getDirection().toString().getClass());
-        // });
-
+    private List<Task> getSortedList(List<Order> sortOrders) {
         Comparator<Task> comparator;
-        if (sortOrders.size() > 0) {
             
-            // I tried to use a hashmap (and avoid if else) for inserting Comparator.naturalOrder() or Comparator.reverseOrder() depending on the
-            // value of sortOrders.get(index).getDirection, but I had issues with the types for the hashmap, tried without success
+        // I tried to use a hashmap (and avoid if else) for inserting Comparator.naturalOrder() or Comparator.reverseOrder() depending on the
+        // value of sortOrders.get(index).getDirection, but I had issues with the types for the hashmap, tried without success
+        if (sortOrders.get(0).getDirection() == Sort.Direction.ASC) {
+            comparator = Comparator.comparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.naturalOrder());
+        } else {
+            comparator = Comparator.comparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.reverseOrder());
+        }
+        sortOrders.remove(0);
+
+        while (!sortOrders.isEmpty()) {
             if (sortOrders.get(0).getDirection() == Sort.Direction.ASC) {
-                comparator = Comparator.comparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.naturalOrder());
+                comparator = comparator.thenComparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.naturalOrder());
             } else {
-                comparator = Comparator.comparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.reverseOrder());
+                comparator = comparator.thenComparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.reverseOrder());
             }
             sortOrders.remove(0);
+        }
 
-            while (!sortOrders.isEmpty()) {
-                if (sortOrders.get(0).getDirection() == Sort.Direction.ASC) {
-                    comparator = comparator.thenComparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.naturalOrder());
-                } else {
-                    comparator = comparator.thenComparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.reverseOrder());
-                }
-                sortOrders.remove(0);
-            }
+        Stream<Task> taskStream = tasks.stream().sorted(comparator);
 
-            Stream<Task> taskStream = tasks.stream().sorted(comparator);
-            List<Task> sortedTasks = taskStream.collect(Collectors.toList());
-            List<List<Task>> pages = new ArrayList<List<Task>>();
-            for (int i = 0; i < sortedTasks.size(); i += pageable.getPageSize()) {
-                pages.add(sortedTasks.subList(i, Math.min(i + pageable.getPageSize(), sortedTasks.size())));
-            }
-            Page<Task> page;
-            try {
-                page = new PageImpl<>(pages.get(pageable.getPageNumber()), pageable, tasks.size());
-            } catch (IndexOutOfBoundsException e) {
-                page = new PageImpl<>(new ArrayList<>(), pageable, tasks.size());
-            }
+        return taskStream.collect(Collectors.toList());
+    }
 
-            // System.out.println("pageable: " + pageable);
-            
-            return page;
+    private List<List<Task>> genPages(List<Task> tasks, Pageable pageable) {
+        List<List<Task>> pages = new ArrayList<List<Task>>();
+        for (int i = 0; i < tasks.size(); i += pageable.getPageSize()) {
+            pages.add(tasks.subList(i, Math.min(i + pageable.getPageSize(), tasks.size())));
+        }
+        
+        return pages;
+    }
+
+    @Override
+    public Page<Task> findAll(Pageable pageable) {
+        List<Order> sortOrders = new ArrayList<Order>(pageable.getSort().toList());
+        List<Task> tasksList;
+
+        if (sortOrders.size() > 0) {
+            tasksList = getSortedList(sortOrders);       
         } else {
-            Page<Task> page = new PageImpl<>(tasks, pageable, tasks.size());
-            return page;
+            tasksList = tasks;
         }    
+        
+        List<List<Task>> pages = genPages(tasksList, pageable);
+        Page<Task> page;
+
+        try {
+            page = new PageImpl<>(pages.get(pageable.getPageNumber()), pageable, tasksList.size());
+        } catch (IndexOutOfBoundsException e) {
+            page = new PageImpl<>(new ArrayList<>(), pageable, tasksList.size());
+        }
+
+        return page;
+    }
+
+    @Override
+    public Page<Task> findByNameAndPriorityAndStatus(String name, String priority, String done, Pageable pageable) {
+        List<Order> sortOrders = new ArrayList<Order>(pageable.getSort().toList());
+        List<Task> tasksList;
+
+        if (sortOrders.size() > 0) {
+            tasksList = getSortedList(sortOrders);       
+        } else {
+            tasksList = tasks;
+        }
+        
+        if (name != null) {
+            tasksList = tasksList.stream().filter(t -> t.getText().toLowerCase().contains(name.toLowerCase())).toList();
+        }
+        if (priority != null) {
+            tasksList = tasksList.stream().filter(t -> t.getPriority() == Integer.parseInt(priority)).toList();
+        }
+        if (done != null) {
+            tasksList = tasksList.stream().filter(t -> t.getDone() == Boolean.parseBoolean(done)).toList();
+        }
+        
+        List<List<Task>> pages = genPages(tasksList, pageable);
+        Page<Task> page;
+
+        try {
+            page = new PageImpl<>(pages.get(pageable.getPageNumber()), pageable, tasksList.size());
+        } catch (IndexOutOfBoundsException e) {
+            page = new PageImpl<>(new ArrayList<>(), pageable, tasksList.size());
+        }
+
+        return page;
     }
 
     @Override
@@ -147,5 +185,5 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
     public void delete(Task task) {
         tasks.remove(task);
     }
-    
+
 }
