@@ -8,12 +8,12 @@ public class Task {
     private Integer id;
     private String text;
     private Integer priority;
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Date creationDate;
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Date dueDate;
     private Boolean done;
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Date doneDate;
 
     public Task() {}

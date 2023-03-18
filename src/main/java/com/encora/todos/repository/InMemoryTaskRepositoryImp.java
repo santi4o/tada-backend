@@ -53,9 +53,11 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
         if (tasks.isEmpty()) {
             task.setId(1);
         } else {
-            task.setId(tasks.get(tasks.size() - 1).getId() + 1);
+            task.setId(tasks.get(0).getId() + 1);
         }
-        tasks.add(task);
+        task.setCreationDate(new Date());
+        task.setDone(false);
+        tasks.add(0, task);
         return task;
     }
 

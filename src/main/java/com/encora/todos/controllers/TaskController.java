@@ -50,6 +50,7 @@ public class TaskController {
         return ResponseEntity.of(service.findTaskById(id));
     }
 
+    @CrossOrigin
     @PostMapping
     public ResponseEntity<Task> save(@RequestBody Task task) {
         Task savedTask = service.saveTask(task);
