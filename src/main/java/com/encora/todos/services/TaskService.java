@@ -1,6 +1,7 @@
 package com.encora.todos.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,10 @@ public class TaskService {
         }
 
         Task toUpdate = toFind.get();
-        toUpdate.setDone(true);
+        if (!toUpdate.getDone()) {
+            toUpdate.setDoneDate(new Date());
+            toUpdate.setDone(true);
+        }
 
         return Optional.of(repository.save(toUpdate));
     }
@@ -107,6 +111,7 @@ public class TaskService {
 
         Task toUpdate = toFind.get();
         toUpdate.setDone(false);
+        toUpdate.setDoneDate(null);
 
         return Optional.of(repository.save(toUpdate));
     }
