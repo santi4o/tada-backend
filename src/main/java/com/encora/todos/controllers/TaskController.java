@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -67,6 +68,20 @@ public class TaskController {
     @PutMapping("{id}")
     public ResponseEntity<Task> update(@PathVariable Integer id, @RequestBody Task task) {
         Optional<Task> updatedTask = service.updateTask(id, task);
+        if (!updatedTask.isPresent()) {
+            return ResponseEntity.ofNullable(null);
+        }
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .path("/{id}")
+                .buildAndExpand(updatedTask.get().getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(updatedTask.get());
+    }
+
+    @CrossOrigin
+    @PatchMapping("{id}/done")
+    public ResponseEntity<Task> markAsDone(@PathVariable Integer id) {
+        Optional<Task> updatedTask = service.markTaskAsDone(id);
         if (!updatedTask.isPresent()) {
             return ResponseEntity.ofNullable(null);
         }

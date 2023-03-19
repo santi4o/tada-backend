@@ -81,6 +81,20 @@ public class TaskService {
         toUpdate.setText(task.getText());
         toUpdate.setPriority(task.getPriority());
         toUpdate.setDueDate(task.getDueDate());
+        
+        return Optional.of(repository.save(toUpdate));
+    }
+
+    public Optional<Task> markTaskAsDone(Integer id) {
+        Optional<Task> toFind = repository.findById(id);
+
+        if (!toFind.isPresent()) {
+            return toFind;
+        }
+
+        Task toUpdate = toFind.get();
+        toUpdate.setDone(true);
+
         return Optional.of(repository.save(toUpdate));
     }
 }
