@@ -173,7 +173,8 @@ public class TaskService {
         }
 
         tasksRepository.delete(toDelete.get());
-
+        calculateStats();
+        
         return true;
     }
 }
