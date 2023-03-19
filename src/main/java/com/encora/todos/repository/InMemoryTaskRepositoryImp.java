@@ -179,6 +179,17 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
     }
 
     @Override
+    public List<Task> findByDone(Boolean done) {
+        return tasks.stream().filter(t -> done.equals(t.getDone())).toList();
+    }
+
+    @Override
+    public List<Task> findByDoneAndPriority(Boolean done, Integer priority) {
+        List<Task> filtered1 = tasks.stream().filter(t -> done.equals(t.getDone())).toList();
+        return filtered1.stream().filter(t -> priority.equals(t.getPriority())).toList();
+    }
+
+    @Override
     public long count() {
         return tasks.size();
     }

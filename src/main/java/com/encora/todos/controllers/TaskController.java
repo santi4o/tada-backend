@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.encora.todos.entities.Task;
+import com.encora.todos.json.TaskPageCustomResponse;
 import com.encora.todos.json.TaskPageRequest;
 import com.encora.todos.services.TaskService;
 
@@ -43,7 +44,7 @@ public class TaskController {
 
     @CrossOrigin
     @GetMapping()
-    public Page<Task> findPage(@RequestParam String pageNumber, @RequestParam String pageSize,
+    public TaskPageCustomResponse findPage(@RequestParam String pageNumber, @RequestParam String pageSize,
             @RequestParam(required = false) ArrayList<String> sorting, @RequestParam(required = false) String name,
             @RequestParam(required = false) String priority, @RequestParam(required = false) String done) {
         return service.getTasks(pageNumber, pageSize, sorting, name, priority, done);
