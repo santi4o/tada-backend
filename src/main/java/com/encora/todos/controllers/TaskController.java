@@ -91,4 +91,18 @@ public class TaskController {
                 .toUri();
         return ResponseEntity.created(uri).body(updatedTask.get());
     }
+    
+    @CrossOrigin
+    @PatchMapping("{id}/undone")
+    public ResponseEntity<Task> markAsPending(@PathVariable Integer id) {
+        Optional<Task> updatedTask = service.markTaskAsPending(id);
+        if (!updatedTask.isPresent()) {
+            return ResponseEntity.ofNullable(null);
+        }
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .path("/{id}")
+                .buildAndExpand(updatedTask.get().getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(updatedTask.get());
+    }
 }
