@@ -94,7 +94,10 @@ public class TaskService {
         toUpdate.setPriority(task.getPriority());
         toUpdate.setDueDate(task.getDueDate());
 
-        return Optional.of(tasksRepository.save(toUpdate));
+        Optional<Task> updated =  Optional.of(tasksRepository.save(toUpdate));
+        calculateStats();
+
+        return updated;
     }
 
     private void calculateStat(Integer priority, String name, String desc) {
@@ -174,7 +177,7 @@ public class TaskService {
 
         tasksRepository.delete(toDelete.get());
         calculateStats();
-        
+
         return true;
     }
 }
