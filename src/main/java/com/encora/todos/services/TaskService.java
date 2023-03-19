@@ -115,4 +115,16 @@ public class TaskService {
 
         return Optional.of(repository.save(toUpdate));
     }
+
+    public boolean delete(Integer id) {
+        Optional<Task> toDelete = repository.findById(id);
+
+        if (!toDelete.isPresent()) {
+            return false;
+        }
+
+        repository.delete(toDelete.get());
+        
+        return true;
+    }
 }

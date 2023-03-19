@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,11 +86,7 @@ public class TaskController {
         if (!updatedTask.isPresent()) {
             return ResponseEntity.ofNullable(null);
         }
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri()
-                .path("/{id}")
-                .buildAndExpand(updatedTask.get().getId())
-                .toUri();
-        return ResponseEntity.created(uri).body(updatedTask.get());
+        return ResponseEntity.ok().body(updatedTask.get());
     }
     
     @CrossOrigin
@@ -99,10 +96,16 @@ public class TaskController {
         if (!updatedTask.isPresent()) {
             return ResponseEntity.ofNullable(null);
         }
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri()
-                .path("/{id}")
-                .buildAndExpand(updatedTask.get().getId())
-                .toUri();
-        return ResponseEntity.created(uri).body(updatedTask.get());
+        return ResponseEntity.ok().body(updatedTask.get());
+    }
+
+    @CrossOrigin
+    @DeleteMapping("{id}")
+    public ResponseEntity<Integer> delete(@PathVariable Integer id) {
+        Boolean deleted = service.delete(id);
+        if (!deleted) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(id);
     }
 }
