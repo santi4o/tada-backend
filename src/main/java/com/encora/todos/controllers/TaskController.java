@@ -2,6 +2,7 @@ package com.encora.todos.controllers;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,5 +61,19 @@ public class TaskController {
                 .buildAndExpand(savedTask.getId())
                 .toUri();
         return ResponseEntity.created(uri).body(task);
+    }
+
+    @CrossOrigin
+    @PutMapping("{id}")
+    public ResponseEntity<Task> update(@PathVariable Integer id, @RequestBody Task task) {
+        Optional<Task> updatedTask = service.updateTask(id, task);
+        if (!updatedTask.isPresent()) {
+            return ResponseEntity.ofNullable(null);
+        }
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .path("/{id}")
+                .buildAndExpand(updatedTask.get().getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(updatedTask.get());
     }
 }

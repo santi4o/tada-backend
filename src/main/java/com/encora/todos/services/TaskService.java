@@ -46,7 +46,8 @@ public class TaskService {
         return repository.findAll(pr);
     }
 
-    public Page<Task> getTasks(String pageNumber, String pageSize, ArrayList<String> sorting, String name, String priority, String done) {
+    public Page<Task> getTasks(String pageNumber, String pageSize, ArrayList<String> sorting, String name,
+            String priority, String done) {
         List<Sort.Order> orders = new ArrayList<Sort.Order>();
 
         if (sorting != null) {
@@ -61,11 +62,25 @@ public class TaskService {
         }
 
         PageRequest pr = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), Sort.by(orders));
-        
+
         return repository.findByNameAndPriorityAndStatus(name, priority, done, pr);
     }
 
     public Optional<Task> findTaskById(Integer id) {
         return repository.findById(id);
+    }
+
+    public Optional<Task> updateTask(Integer id, Task task) {
+        Optional<Task> toFind = repository.findById(id);
+
+        if (!toFind.isPresent()) {
+            return toFind;
+        }
+
+        Task toUpdate = toFind.get();
+        toUpdate.setText(task.getText());
+        toUpdate.setPriority(task.getPriority());
+        toUpdate.setDueDate(task.getDueDate());
+        return Optional.of(repository.save(toUpdate));
     }
 }
