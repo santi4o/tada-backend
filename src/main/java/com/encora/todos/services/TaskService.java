@@ -100,7 +100,7 @@ public class TaskService {
         return updated;
     }
 
-    private void calculateStat(Integer priority, String name, String desc) {
+    private void calculateStat(Integer priority, String name, String description) {
         List<Task> filtered;
         long acum = 0;
 
@@ -122,7 +122,7 @@ public class TaskService {
             stat.setValue(filtered.isEmpty() ? -1 : acum / filtered.size());
             statisticRepository.save(stat);
         } else {
-            statisticRepository.save(new Statistic(name, desc, filtered.isEmpty() ? -1 : acum / filtered.size()));
+            statisticRepository.save(new Statistic(name, description, filtered.isEmpty() ? -1 : acum / filtered.size()));
         }
 
     }
