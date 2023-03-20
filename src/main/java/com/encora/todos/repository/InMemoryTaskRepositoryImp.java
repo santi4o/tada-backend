@@ -70,7 +70,7 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
         toUpdate.setPriority(task.getPriority());
         toUpdate.setDueDate(task.getDueDate());
         toUpdate.setDone(task.getDone());
-        if (task.getDone()) {
+        if (task.getDone() && !toUpdate.getDone()) {
             Date now = new Date();
             toUpdate.setDoneDate(now);
         }
