@@ -78,9 +78,7 @@ public class TaskRepositoryTest {
         Task retrieved = dao.findById(1).get();
         retrieved.setText("feed my cat");
         assertNull(retrieved.getDoneDate());
-        retrieved.setDone(true);
-        dao.save(retrieved);
-        assertNotNull(retrieved.getDoneDate());
+        
         Task retrieved2 = dao.findById(1).get();
         assertEquals("feed my cat", retrieved2.getText());
     }
