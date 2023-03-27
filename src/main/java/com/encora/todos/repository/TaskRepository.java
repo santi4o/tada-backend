@@ -14,7 +14,7 @@ public interface TaskRepository {
     List<Task> findAll(); // Delete when extending JpaRepository
     Page<Task> findAll(Pageable pageable); // Delete when extending JpaRepository
     Optional<Task> findById(Integer id); // Delete when extending JpaRepository
-    List<Task> findByDone(Boolean done); // Delete when extending JpaRepository
+    List<Task> findByDone(Boolean done);
     List<Task> findByDoneAndPriority(Boolean done, Integer priority);
     long count(); // Delete when extending JpaRepository
     void delete(Task task); // Delete when extending JpaRepository

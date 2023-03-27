@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Component;
 
 import com.encora.todos.entities.Task;
@@ -25,11 +24,11 @@ import com.encora.todos.entities.Task;
 public class InMemoryTaskRepositoryImp implements TaskRepository {
 
     private List<Task> tasks = new ArrayList<Task>();
-    Map<String, Function<? super Task,? extends String>> keyExtractors = new HashMap<String, Function<? super Task,? extends String>>();
+    Map<String, Function<? super Task, ? extends String>> keyExtractors = new HashMap<String, Function<? super Task, ? extends String>>();
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
 
     public InMemoryTaskRepositoryImp() {
-        keyExtractors.put("text", task -> task.getText() );
+        keyExtractors.put("text", task -> task.getText());
         keyExtractors.put("priority", task -> task.getPriority().toString());
         keyExtractors.put("creationDate", task -> dateFormat.format(task.getCreationDate()));
         keyExtractors.put("dueDate", task -> task.getDueDate() != null ? dateFormat.format(task.getDueDate()) : "");
@@ -82,28 +81,34 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
         return tasks;
     }
 
-    private List<Task> getSortedList(List<Order> sortOrders) {
+    private List<Task> getSortedList(List<Task> taskList, List<Sort.Order> sortOrders) {
         Comparator<Task> comparator;
-            
-        // I tried to use a hashmap (and avoid if else) for inserting Comparator.naturalOrder() or Comparator.reverseOrder() depending on the
-        // value of sortOrders.get(index).getDirection, but I had issues with the types for the hashmap, tried without success
+
+        // I tried to use a hashmap (and avoid if else) for inserting
+        // Comparator.naturalOrder() or Comparator.reverseOrder() depending on the
+        // value of sortOrders.get(index).getDirection, but I had issues with the types
+        // for the hashmap, tried without success
         if (sortOrders.get(0).getDirection() == Sort.Direction.ASC) {
-            comparator = Comparator.comparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.naturalOrder());
+            comparator = Comparator.comparing(keyExtractors.get(sortOrders.get(0).getProperty()),
+                    Comparator.naturalOrder());
         } else {
-            comparator = Comparator.comparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.reverseOrder());
+            comparator = Comparator.comparing(keyExtractors.get(sortOrders.get(0).getProperty()),
+                    Comparator.reverseOrder());
         }
         sortOrders.remove(0);
 
         while (!sortOrders.isEmpty()) {
             if (sortOrders.get(0).getDirection() == Sort.Direction.ASC) {
-                comparator = comparator.thenComparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.naturalOrder());
+                comparator = comparator.thenComparing(keyExtractors.get(sortOrders.get(0).getProperty()),
+                        Comparator.naturalOrder());
             } else {
-                comparator = comparator.thenComparing(keyExtractors.get(sortOrders.get(0).getProperty()), Comparator.reverseOrder());
+                comparator = comparator.thenComparing(keyExtractors.get(sortOrders.get(0).getProperty()),
+                        Comparator.reverseOrder());
             }
             sortOrders.remove(0);
         }
 
-        Stream<Task> taskStream = tasks.stream().sorted(comparator);
+        Stream<Task> taskStream = taskList.stream().sorted(comparator);
 
         return taskStream.collect(Collectors.toList());
     }
@@ -113,21 +118,21 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
         for (int i = 0; i < tasks.size(); i += pageable.getPageSize()) {
             pages.add(tasks.subList(i, Math.min(i + pageable.getPageSize(), tasks.size())));
         }
-        
+
         return pages;
     }
 
     @Override
     public Page<Task> findAll(Pageable pageable) {
-        List<Order> sortOrders = new ArrayList<Order>(pageable.getSort().toList());
+        List<Sort.Order> sortOrders = new ArrayList<Sort.Order>(pageable.getSort().toList());
         List<Task> tasksList;
 
         if (sortOrders.size() > 0) {
-            tasksList = getSortedList(sortOrders);       
+            tasksList = getSortedList(tasks, sortOrders);
         } else {
             tasksList = tasks;
-        }    
-        
+        }
+
         List<List<Task>> pages = genPages(tasksList, pageable);
         Page<Task> page;
 
@@ -142,15 +147,9 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
 
     @Override
     public Page<Task> findByNameAndPriorityAndStatus(String name, String priority, String done, Pageable pageable) {
-        List<Order> sortOrders = new ArrayList<Order>(pageable.getSort().toList());
-        List<Task> tasksList;
+        List<Sort.Order> sortOrders = new ArrayList<Sort.Order>(pageable.getSort().toList());
+        List<Task> tasksList = new ArrayList<Task>(tasks);
 
-        if (sortOrders.size() > 0) {
-            tasksList = getSortedList(sortOrders);       
-        } else {
-            tasksList = tasks;
-        }
-        
         if (name != null) {
             tasksList = tasksList.stream().filter(t -> t.getText().toLowerCase().contains(name.toLowerCase())).toList();
         }
@@ -160,14 +159,18 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
         if (done != null) {
             tasksList = tasksList.stream().filter(t -> t.getDone() == Boolean.parseBoolean(done)).toList();
         }
-        
+
+        if (sortOrders.size() > 0) {
+            tasksList = getSortedList(tasksList, sortOrders);
+        }
+
         List<List<Task>> pages = genPages(tasksList, pageable);
         Page<Task> page;
 
         try {
-            page = new PageImpl<>(pages.get(pageable.getPageNumber()), pageable, tasksList.size());
+            page = new PageImpl<Task>(pages.get(pageable.getPageNumber()), pageable, tasksList.size());
         } catch (IndexOutOfBoundsException e) {
-            page = new PageImpl<>(new ArrayList<>(), pageable, tasksList.size());
+            page = new PageImpl<Task>(new ArrayList<>(), pageable, tasksList.size());
         }
 
         return page;
