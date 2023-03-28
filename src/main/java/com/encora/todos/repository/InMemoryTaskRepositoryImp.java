@@ -49,6 +49,12 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
     }
 
     private Task saveNew(Task task) {
+        Task sameName = tasks.stream().filter(t -> task.getText().equals(t.getText())).findFirst().orElse(null);
+
+        if (sameName != null) {
+            return null;
+        }
+
         if (tasks.isEmpty()) {
             task.setId(1);
         } else {
@@ -64,6 +70,13 @@ public class InMemoryTaskRepositoryImp implements TaskRepository {
         Task toUpdate = tasks.stream().filter(t -> task.getId().equals(t.getId())).findFirst().orElse(null);
         if (toUpdate == null) {
             throw new Exception("task with id: " + task.getId() + " was not found");
+        }
+
+        Task sameName = tasks.stream()
+                .filter(t -> ((task.getId().intValue() != t.getId().intValue()) && (task.getText().equals(t.getText()))))
+                .findFirst().orElse(null);
+        if (sameName != null) {
+            return null;
         }
         toUpdate.setText(task.getText());
         toUpdate.setPriority(task.getPriority());
