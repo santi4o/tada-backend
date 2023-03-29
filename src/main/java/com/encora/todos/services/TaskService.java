@@ -89,12 +89,13 @@ public class TaskService {
             return toFind;
         }
 
-        Task toUpdate = toFind.get();
+        Task toUpdate = new Task(toFind.get());
+        toUpdate.setId(id);
         toUpdate.setText(task.getText());
         toUpdate.setPriority(task.getPriority());
         toUpdate.setDueDate(task.getDueDate());
 
-        Optional<Task> updated =  Optional.of(tasksRepository.save(toUpdate));
+        Optional<Task> updated =  Optional.ofNullable(tasksRepository.save(toUpdate));
         calculateStats();
 
         return updated;

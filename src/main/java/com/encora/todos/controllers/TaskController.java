@@ -59,6 +59,11 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<Task> save(@RequestBody Task task) {
         Task savedTask = service.saveTask(task);
+        
+        if (savedTask == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .path("/{id}")
                 .buildAndExpand(savedTask.getId())
@@ -71,13 +76,10 @@ public class TaskController {
     public ResponseEntity<Task> update(@PathVariable Integer id, @RequestBody Task task) {
         Optional<Task> updatedTask = service.updateTask(id, task);
         if (!updatedTask.isPresent()) {
-            return ResponseEntity.ofNullable(null);
+            return ResponseEntity.badRequest().body(null);
         }
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri()
-                .path("/{id}")
-                .buildAndExpand(updatedTask.get().getId())
-                .toUri();
-        return ResponseEntity.created(uri).body(updatedTask.get());
+       
+        return ResponseEntity.ok().body(updatedTask.get());
     }
 
     @CrossOrigin

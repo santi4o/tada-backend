@@ -26,6 +26,10 @@ public class Task {
         this.done = done;
     }
 
+    public Task(Task task) {
+        this(task.getText(), task.getPriority(), task.getCreationDate(), task.getDueDate(), task.getDone());
+    }
+
     public Integer getId() {
         return id;
     }

@@ -34,7 +34,7 @@ public class TaskControllerTest {
     @Test
     public void saveTask() {
         Date date = new Date();
-        Task newTask = new Task("test task", 1, null, date, false);
+        Task newTask = new Task("test task 1", 1, null, date, false);
 
         ResponseEntity<Task> entity = template.postForEntity(
                 "/todos", newTask,
@@ -44,7 +44,7 @@ public class TaskControllerTest {
 
         Task response = entity.getBody();
         if (response != null) {
-            assertEquals("test task", response.getText());
+            assertEquals("test task 1", response.getText());
             assertEquals(1, response.getPriority());
             assertNotNull(response.getCreationDate());
             assertEquals(date, response.getDueDate());
@@ -55,7 +55,7 @@ public class TaskControllerTest {
     @Test
     public void updateTask() {
         Date date = new Date();
-        Task newTask = new Task("test task", 1, null, date, false);
+        Task newTask = new Task("test task 2", 1, null, date, false);
 
         ResponseEntity<Task> entity = template.postForEntity(
                 "/todos", newTask,
@@ -91,7 +91,7 @@ public class TaskControllerTest {
     @Test
     public void deleteTask() {
         Date date = new Date();
-        Task newTask = new Task("test task", 1, null, date, false);
+        Task newTask = new Task("test task 3", 1, null, date, false);
 
         ResponseEntity<Task> entity = template.postForEntity(
                 "/todos", newTask,
